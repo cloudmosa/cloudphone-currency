@@ -5,6 +5,7 @@ import { _ } from "../helpers/utils";
 import { focusHome, updateHomeHeader } from "../input";
 import { setHeaderText } from "../components/header";
 import { hideCenterButton, hideInfoButton, showInfoButton } from "../components/softkeys";
+import { BACK } from "../helpers/events";
 
 const dialog = _("about") as HTMLDialogElement;
 
@@ -20,7 +21,7 @@ export function showAbout() {
   setHeaderText("About");
   hideInfoButton();
   hideCenterButton();
-  window.addEventListener("back", handleBackEvent);
+  window.addEventListener(BACK, handleBackEvent);
 }
 
 export function hideAbout() {
@@ -28,5 +29,5 @@ export function hideAbout() {
   updateHomeHeader();
   showInfoButton();
   focusHome();
-  window.removeEventListener("back", handleBackEvent);
+  window.removeEventListener(BACK, handleBackEvent);
 }

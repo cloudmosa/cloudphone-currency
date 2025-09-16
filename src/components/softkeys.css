@@ -18,6 +18,18 @@ footer > div {
   color: white;
 }
 
+footer > div:first-child > svg:last-child {
+  display: none;
+}
+
+footer > div:first-child[data-state="list"] > svg:last-child {
+  display: inline;
+}
+
+footer > div:first-child[data-state="list"] > svg:first-child {
+  display: none;
+}
+
 /* QVGA (or bigger) */
 @media only screen and (min-width: 129px) {
   footer {

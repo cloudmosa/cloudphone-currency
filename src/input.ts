@@ -155,6 +155,14 @@ function handleInputChange(event: KeyboardEvent) {
         openCurrencyDialog();
       }
       return;
+    case "Backspace":
+      // Exit app after Backspace when value is zero
+      if (event.type === "keydown") {
+        if (input.value === 0) {
+          requestAnimationFrame(() => window.close());
+        }
+      }
+      break;
   }
 
   const index = input === currencyInput1 ? 1 : 2;
@@ -224,6 +232,8 @@ export function reverseCurrencies() {
 }
 
 function openCurrencyDialog() {
+  // Don't allow selection of already-selected currencies
+  selectCurrency(activeIndex === 1 ? currency2 : currency1);
   selectCurrency(activeIndex === 1 ? currency1 : currency2);
   showCurrencyList();
 }
@@ -262,13 +272,10 @@ function bindInputs() {
     input.addEventListener("blur", handleBlur);
   });
 
-  if (import.meta.env.DEV) {
-    [currencyLabel1, currencyLabel2].forEach((label) =>
-      label.addEventListener("click", onCurrencyLabelClick),
-    );
-  }
+  [currencyLabel1, currencyLabel2].forEach((label) =>
+    label.addEventListener("click", onCurrencyLabelClick),
+  );
 
-  // reverseButton.addEventListener("click", reverseCurrencies);
   reverseButton.addEventListener("keydown", handleReverseButtonKeydown);
 }
 

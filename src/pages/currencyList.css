@@ -65,7 +65,6 @@ li > [aria-disabled="true"] {
   border: none;
 
   width: 100%;
-  /* width: calc(100% - 1em); */
 
   align-items: center;
   color: var(--text-primary);
@@ -112,6 +111,7 @@ li > [aria-disabled="true"] {
 
   .currency-item {
     padding: 0.5rem;
+    height: 4.5em;
   }
 
   .currency-item > *:last-child {
@@ -123,6 +123,11 @@ li > [aria-disabled="true"] {
     margin: 0 0.5rem;
     height: 2rem;
     line-height: 2rem;
+    width: 1em;
+    max-width: 1em;
+    min-width: 1em;
+    text-overflow: clip;
+    overflow: hidden;
   }
 
   .currency-item .currency-flag {
@@ -151,6 +156,7 @@ li > [aria-disabled="true"] {
 
   .currency-item {
     padding: 0.25rem;
+    height: 2.75em;
   }
 
   .currency-item > *:last-child {

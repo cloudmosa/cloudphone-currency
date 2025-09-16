@@ -244,7 +244,7 @@ export class CurrencyInput extends HTMLDivElement {
   ) {
     const formatted = formatNumberToCurrency(this._fmt, this._value);
 
-    if (previousRawValue == null || previousCaret == null) {
+    if (previousRawValue === null || previousCaret === null) {
       this._input.value = formatted;
       const numericPositions = numericPositionsInFormatted(
         formatted,

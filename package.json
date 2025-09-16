@@ -1,13 +1,13 @@
 {
   "devDependencies": {
-    "@rsbuild/core": "^1.5.3",
-    "@types/node": "^24.3.0",
+    "@rsbuild/core": "^1.5.7",
+    "@types/node": "^24.5.0",
     "prettier": "3.6.2",
     "rsbuild-plugin-html-minifier-terser": "^1.1.2",
     "typescript": "^5.9.2"
   },
   "name": "cloudphone-currency",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Currency converter for Cloud Phone keypad phones",
   "main": "./dist/index.js",
   "scripts": {

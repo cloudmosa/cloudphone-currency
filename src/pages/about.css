@@ -23,9 +23,15 @@
 
 #about h2,
 #about p,
-#about img {
+#about .icon {
   display: block;
   color: white;
+}
+
+#about .icon {
+  background-image: url(../../assets/img/icon.png);
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 #about p {
@@ -38,7 +44,7 @@
     font-size: 18pt;
   }
 
-  #about img {
+  #about .icon {
     height: 5rem;
     width: 5rem;
   }
@@ -52,10 +58,10 @@
 @media only screen and (max-width: 128px) {
   #about h2 {
     font-size: 9pt;
-    margin: 1.25rem 0;
+    margin: 1.25em 0 0.5rem 0;
   }
 
-  #about img {
+  #about .icon {
     height: 2.5rem;
     width: 2.5rem;
   }

@@ -1,0 +1,84 @@
+dialog#search {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background-color: var(--bg-secondary);
+
+  flex-direction: column;
+}
+
+dialog#search:open {
+  display: flex;
+}
+
+#search header {
+  position: relative;
+  flex-shrink: 0;
+}
+
+#search header svg {
+  position: absolute;
+  display: block;
+  top: 0.125rem;
+}
+
+#search header input {
+  position: absolute;
+  top: 0.125rem;
+  border: none;
+  outline: none;
+  padding: 0;
+  background-color: transparent;
+  color: var(--text-primary);
+  font-weight: 900;
+}
+
+#search-list-container {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+/* QVGA (or bigger) */
+@media only screen and (min-width: 129px) {
+  dialog#search {
+    height: calc(100vh - 36px);
+  }
+
+  #search header svg {
+    height: 2rem;
+    width: 2rem;
+    left: 0.5rem;
+  }
+
+  #search header input {
+    height: 2rem;
+    line-height: 2rem;
+    width: calc(100vw - 2rem - 0.5rem - 0.5rem);
+    left: calc(2rem + 0.5rem);
+
+    font-size: 18pt;
+  }
+}
+
+/* QQVGA */
+@media only screen and (max-width: 128px) {
+  dialog#search {
+    height: calc(100vh - 20px);
+  }
+
+  #search header svg {
+    height: 1rem;
+    width: 1rem;
+    left: 0.25rem;
+  }
+
+  #search header input {
+    height: 1rem;
+    line-height: 1rem;
+    width: calc(100vw - 1rem - 0.25rem - 0.25rem);
+    left: calc(1rem + 0.25rem);
+
+    font-size: 9pt;
+  }
+}

@@ -3,6 +3,7 @@ import { CurrencyCode } from "../data/currency";
 export const CURRENCY_SELECTED = "currencySelected";
 export const CURRENCY_CHANGED = "currencyChange";
 export const CURRENCIES_REVERSED = "currenciesReversed";
+export const BACK = "back";
 
 export type CurrencySelectedEvent = {
   currency: CurrencyCode;
