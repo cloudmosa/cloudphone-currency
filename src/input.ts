@@ -172,6 +172,17 @@ function handleInputChange(event: KeyboardEvent) {
   updateUI();
 }
 
+function onBack(event: Event) {
+  // Ignore CustomEvents
+  if (!event.isTrusted || (event instanceof CustomEvent)) return;
+
+  // Don't exit the app unless the value is zero
+  const input = (focusIndex === 1) ? currencyInput1 : currencyInput2;
+  if (input.value !== 0) {
+    event.preventDefault();
+  }
+}
+
 const handleFocus = (e: FocusEvent) =>
   (focusIndex = e.currentTarget === currencyInput1 ? 1 : 2);
 
@@ -192,13 +203,6 @@ export function updateHomeHeader() {
   // performance isn't a problem in CloudPhone :)
   const _currency1 = findCurrency(currency1)!;
   const _currency2 = findCurrency(currency2)!;
-
-  // setHeaderText(
-  //   // if one of them is RTL we probably should format it differently
-  //   isRTL(_currency1.languageCode) || isRTL(_currency2.languageCode)
-  //     ? `${_currency2.currencySymbol} ← ${_currency1.currencySymbol}`
-  //     : `${_currency1.currencySymbol} → ${_currency2.currencySymbol}`,
-  // );
 
   setHeaderText(`${_currency1.currencySymbol} → ${_currency2.currencySymbol}`);
 }
@@ -310,6 +314,7 @@ export function setup(rates: USDExchangeRateResponse) {
   updateLabel(currencyLabel1, currency1);
   updateLabel(currencyLabel2, currency2);
   window.addEventListener(CURRENCY_SELECTED, onCurrencySelected);
+  window.addEventListener(BACK, onBack);
 }
 
 updateHomeHeader();
