@@ -1,12 +1,12 @@
 # [Cloud Phone](https://www.cloudfone.com/) Currency Converter
 
-<img src="icon.png" alt="Currency Converter Icon" width="128" style="float:left;margin-inline-end: 1em" />
+<img src="icon.png" alt="Currency Converter Icon" width="128" style="float:left;margin-inline-end: 1em" draggable="false" />
 
 A simple currency converter for [Cloud Phone](https://developer.cloudphone.tech), a remote web browser and app store for 4G feture phones.
 
 :beginner: Available at [cloudmosa.github.io/cloudphone-currency/](https://cloudmosa.github.io/cloudphone-currency/)
 
-:page_facing_up: Learn more at [Cloud Phone for Developers](developer.cloudphone.tech)
+:page_facing_up: Learn more at [Cloud Phone for Developers](https://developer.cloudphone.tech)
 
 This app is written in Vanilla JS and does not use a frontend framework like React or Svelte. There are no runtime dependencies. Since Cloud Phone uses a modern Chromium engine, there is no transpilation to support older browsers.
 

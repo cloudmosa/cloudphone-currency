@@ -9,13 +9,11 @@ const infoButton = footer.firstElementChild as HTMLDivElement;
 const centerButton = infoButton.nextElementSibling as HTMLDivElement;
 
 function attachSoftKeyClickEvents() {
-  infoButton.onclick = () => {
-    showAbout();
-  };
+  infoButton.onclick = () => showAbout();
 
   const backButton = footer.lastElementChild as HTMLDivElement;
   backButton.onclick = () => {
-    window.dispatchEvent(new Event(BACK, { cancelable: true }));
+    window.dispatchEvent(new CustomEvent(BACK, { cancelable: true }));
   };
 }
 
@@ -59,7 +57,7 @@ function handleKeydown(ev: KeyboardEvent) {
 
   if (ev.key === "Backspace") {
     requestAnimationFrame(() => {
-      window.dispatchEvent(new Event(BACK, { cancelable: true }));
+      window.dispatchEvent(new CustomEvent(BACK, { cancelable: true }));
     });
   }
 }

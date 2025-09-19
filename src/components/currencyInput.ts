@@ -4,6 +4,7 @@ import {
   getFractionDigits,
   USD,
 } from "../data/currencies";
+import { BACK } from "../helpers/events";
 
 const DIGITS = new RegExp(/\d/);
 const ONLY_DIGITS = new RegExp(/^[0-9]$/);
@@ -140,6 +141,8 @@ export class CurrencyInput extends HTMLDivElement {
     this._input.setAttribute("x-puffin-entersfullscreen", "off");
 
     this._shadow.appendChild(this._input);
+
+    window.addEventListener(BACK, this._onBack);
   }
 
   connectedCallback() {
@@ -161,6 +164,7 @@ export class CurrencyInput extends HTMLDivElement {
     this._input.removeEventListener("keydown", this._onKeyDown);
     this._input.removeEventListener("input", this._onInput);
     this._input.removeEventListener("blur", this._onBlur);
+    window.removeEventListener(BACK, this._onBack);
   }
 
   _updatePrecision() {
@@ -281,8 +285,53 @@ export class CurrencyInput extends HTMLDivElement {
     this._input.setSelectionRange(newCaretPos, newCaretPos);
   }
 
+  private _performBackspace(): { newValue: string, newCaret: number } {
+    const value = this._input.value;
+    const caretStart = this._input.selectionStart ?? 0;
+    const caretEnd = this._input.selectionEnd ?? caretStart;
+
+    // If there's a selection, delete the entire selection
+    if (caretStart !== caretEnd) {
+      const newValue = value.slice(0, caretStart) + value.slice(caretEnd);
+      return { newValue, newCaret: caretStart };
+    }
+
+    // If caret is at the beginning, nothing to delete
+    if (caretStart === 0) {
+      return { newValue: value, newCaret: caretStart };
+    }
+
+    // Otherwise, delete one character before caret
+    const deletePos = caretStart - 1;
+    const newValue = value.slice(0, deletePos) + value.slice(caretStart);
+    const newCaret = deletePos;
+
+    return { newValue, newCaret };
+  }
+
+  private _onBack = (e: Event) => {
+    console.log('back', e);
+
+    // Ignore when not in focus
+    const isFocused = document.activeElement === this._input;
+    if (!isFocused || (e instanceof CustomEvent)) return;
+
+    // Prevent closing app when value isn't zero
+    if (this.value !== 0) {
+      e.preventDefault();
+
+      const { newValue, newCaret } = this._performBackspace();
+
+      this._input.value = newValue;
+      this._input.setSelectionRange(newCaret, newCaret);
+
+      // Re-parse and re-render into formatted currency
+      this._onInput(e);
+    }
+  }
+
   private _onInput = (e: Event) => {
-    const rawValue = (e.target as HTMLInputElement).value;
+    const rawValue = ((e.target as HTMLInputElement) ?? this._input).value;
     const caret = this._input.selectionStart ?? 0;
 
     let norm = toNormalizedNumericString(
