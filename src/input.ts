@@ -8,6 +8,7 @@ import { exchange, USDExchangeRateResponse } from "./api/exchangeRates";
 import { CurrencyCode } from "./data/currency";
 import { _ } from "./helpers/utils";
 import {
+  BACK,
   CURRENCIES_REVERSED,
   CurrenciesReversedEvent,
   CURRENCY_CHANGED,
