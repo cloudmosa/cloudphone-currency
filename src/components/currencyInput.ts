@@ -313,8 +313,8 @@ export class CurrencyInput extends HTMLDivElement {
     console.log('back', e);
 
     // Ignore when not in focus
-    const isFocused = document.activeElement === this._input;
-    if (!isFocused || (e instanceof CustomEvent)) return;
+    const isFocused = (this.contains(document.activeElement) && this !== document.activeElement);
+    if (!isFocused || !e.isTrusted || (e instanceof CustomEvent)) return;
 
     // Prevent closing app when value isn't zero
     if (this.value !== 0) {
