@@ -1,12 +1,13 @@
 import { hideInfoButton, setInfoButtonState } from "../components/softkeys";
 import { CURRENCIES } from "../data/currencies";
-import { Currency } from "../data/currency";
+import { Currency, CurrencyCode } from "../data/currency";
 import { _ } from "../helpers/utils";
 import {
   createListItem,
   onCurrencyClick,
   queryCurrencyCode,
   scrollIntoViewIfNeeded,
+  selectCurrency as setSelectedCurrency,
 } from "./currencyList";
 import "./searchCurrency.css";
 
@@ -15,6 +16,7 @@ const input = _("search-input") as HTMLInputElement;
 const list = _("search-list") as HTMLOListElement;
 
 let currentSearchText = "";
+let selectedCurrencies: CurrencyCode[] = [];
 
 function searchCurrencies(searchText: string) {
   return (a: Currency) => {
@@ -63,8 +65,14 @@ function populateList() {
       document.createDocumentFragment(),
     );
 
+  selectedCurrencies.forEach((c) => setSelectedCurrency(c, false, searchResultsElement));
+
   list.append(searchResultsElement);
   currentSearchText = searchText;
+}
+
+export function selectCurrencies(currencies: CurrencyCode[]) {
+  selectedCurrencies = currencies;
 }
 
 function handleInputKeydown(e: KeyboardEvent) {
@@ -116,10 +124,12 @@ function handleListKeyUp(ev: KeyboardEvent) {
   if (ev.key === "Enter") {
     const button = target.firstElementChild as HTMLDivElement;
 
-    requestAnimationFrame(() => {
-      onCurrencyClick(queryCurrencyCode(button));
-      hideSearch();
-    });
+    if (button.ariaDisabled !== "true") {
+      requestAnimationFrame(() => {
+        onCurrencyClick(queryCurrencyCode(button));
+        hideSearch();
+      });
+    }
   }
 }
 

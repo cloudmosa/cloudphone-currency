@@ -4,6 +4,8 @@ export const CURRENCY_SELECTED = "currencySelected";
 export const CURRENCY_CHANGED = "currencyChange";
 export const CURRENCIES_REVERSED = "currenciesReversed";
 export const BACK = "back";
+export const SEARCH = "search";
+export const ABOUT = "about";
 
 export type CurrencySelectedEvent = {
   currency: CurrencyCode;

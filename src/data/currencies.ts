@@ -100,7 +100,6 @@ export function getCountryCode(currency: Currency) {
 
 export function guessCurrency(countryCode: string) {
   const currencyCode = COUNTRIES.get(countryCode.toUpperCase());
-  console.log("guessCurrency", countryCode, currencyCode);
   if (currencyCode) {
     return findCurrency(currencyCode);
   }

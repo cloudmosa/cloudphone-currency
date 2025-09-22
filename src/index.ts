@@ -20,9 +20,7 @@ fetchUSDExchangeRates()
 
     // Clear splash screen and update UI
     setup(rates);
-    queueMicrotask(() => {
-      splash.remove();
-    });
+    requestAnimationFrame(() => splash.remove());
   })
   .catch((e) => console.warn(e));
 

@@ -2,7 +2,7 @@ import { showAbout } from "../pages/about";
 import "./softkeys.css";
 import { _ } from "../helpers/utils";
 import { showSearch } from "../pages/searchCurrency";
-import { BACK } from "../helpers/events";
+import { ABOUT, BACK, SEARCH } from "../helpers/events";
 
 const footer = _("cp-softkeys") as HTMLElement;
 const infoButton = footer.firstElementChild as HTMLDivElement;
@@ -47,11 +47,14 @@ function handleKeydown(ev: KeyboardEvent) {
   if (ev.key === "Escape") {
     if (infoButton.dataset.state === "list") {
       showSearch();
+      window.dispatchEvent(new CustomEvent(SEARCH));
       return;
     }
 
     if (infoButton.ariaDisabled !== "true") {
       showAbout();
+      window.dispatchEvent(new CustomEvent(ABOUT));
+      return;
     }
   }
 

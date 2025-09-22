@@ -15,6 +15,7 @@ import {
   CURRENCY_SELECTED,
   CurrencyChangedEvent,
   CurrencySelectedEvent,
+  SEARCH,
 } from "./helpers/events";
 import { selectCurrency, showCurrencyList } from "./pages/currencyList";
 import { CurrencyInput } from "./components/currencyInput";
@@ -25,6 +26,7 @@ import {
   showCenterButton,
 } from "./components/softkeys";
 import { getCountryForTimezone } from "./data/timezone";
+import { selectCurrencies as selectSearchCurrencies} from "./pages/searchCurrency";
 
 type InputIndex = 1 | 2;
 
@@ -60,13 +62,9 @@ if (!localStorage.getItem("countryGuessed")) {
     new Intl.DateTimeFormat().resolvedOptions().timeZone,
   )?.id;
 
-  console.log("Guessed Country", guessedCountry);
-
   if (guessedCountry) {
-    console.log("CURRENCIES", CURRENCIES);
     const guessedCurrency = guessCurrency(guessedCountry);
 
-    console.log("Guessed Currency", guessedCurrency);
     if (guessedCurrency) {
       currency1 = guessedCurrency.currencyCode;
       storeCurrency();
@@ -138,6 +136,8 @@ function updateUI() {
   setCurrencyState(targetIdx as InputIndex, { quantity: result });
 }
 
+let wasZero = false;
+
 function handleInputChange(event: KeyboardEvent) {
   const input = event.currentTarget as CurrencyInput;
 
@@ -165,10 +165,12 @@ function handleInputChange(event: KeyboardEvent) {
     case "Backspace":
       // Exit app after Backspace when value is zero
       if (event.type === "keydown") {
-        if (input.value === 0) {
+        if (wasZero && input.value === 0) {
           requestAnimationFrame(() => window.close());
         }
       }
+
+      wasZero = (input.value === 0);
       break;
   }
 
@@ -188,6 +190,11 @@ function onBack(event: Event) {
   if (input.value !== 0) {
     event.preventDefault();
   }
+}
+
+function onSearch() {
+  // Disables currently-selected currencies
+  selectSearchCurrencies([currency1, currency2]);
 }
 
 const handleFocus = (e: FocusEvent) =>
@@ -244,8 +251,8 @@ export function reverseCurrencies() {
 
 function openCurrencyDialog() {
   // Don't allow selection of already-selected currencies
-  selectCurrency(activeIndex === 1 ? currency2 : currency1);
-  selectCurrency(activeIndex === 1 ? currency1 : currency2);
+  selectCurrency(activeIndex === 1 ? currency2 : currency1, false);
+  selectCurrency(activeIndex === 1 ? currency1 : currency2, true);
   showCurrencyList();
 }
 
@@ -322,6 +329,7 @@ export function setup(rates: USDExchangeRateResponse) {
   updateLabel(currencyLabel2, currency2);
   window.addEventListener(CURRENCY_SELECTED, onCurrencySelected);
   window.addEventListener(BACK, onBack);
+  window.addEventListener(SEARCH, onSearch);
 }
 
 updateHomeHeader();

@@ -43,8 +43,6 @@ export function queryCurrencyCode(el: HTMLElement): CurrencyCode | undefined {
 }
 
 export function onCurrencyClick(currencyCode?: CurrencyCode) {
-  console.log("onCurrencyClick", currencyCode);
-
   if (currencyCode) {
     window.dispatchEvent(
       new CustomEvent<CurrencySelectedEvent>(CURRENCY_SELECTED, {
@@ -95,17 +93,19 @@ function unselectCurrency() {
     });
 }
 
-export function selectCurrency(code: CurrencyCode) {
-  const el = list.querySelector(
+export function selectCurrency(code: CurrencyCode, focus: boolean = true, currencyList: HTMLElement | DocumentFragment = list) {
+  const el = currencyList.querySelector(
     `[data-code="${code}"]`,
   ) as HTMLDivElement | null;
   if (el) {
     el.ariaDisabled = "true";
     // wait until dialog is open
-    queueMicrotask(() => {
-      scrollIntoViewIfNeeded(el);
-      el.parentElement!.focus();
-    });
+    if (focus) {
+      queueMicrotask(() => {
+        scrollIntoViewIfNeeded(el);
+        el.parentElement!.focus();
+      });
+    }
   }
 }
 

@@ -285,50 +285,97 @@ export class CurrencyInput extends HTMLDivElement {
     this._input.setSelectionRange(newCaretPos, newCaretPos);
   }
 
-  private _performBackspace(): { newValue: string, newCaret: number } {
-    const value = this._input.value;
+  private _performBackspace() {
+    const currentFormatted = this._input.value;
     const caretStart = this._input.selectionStart ?? 0;
     const caretEnd = this._input.selectionEnd ?? caretStart;
 
-    // If there's a selection, delete the entire selection
+    // Normalize the current formatted value to get the numeric string
+    let normalizedCurrent = toNormalizedNumericString(
+      currentFormatted,
+      this._currencySymbol,
+      this._groupSeparator,
+      this._decimalSeparator
+    );
+    
+    // Handle precision
+    const parts = normalizedCurrent.split(".");
+    if (parts.length > 1) {
+      const intPart = parts.shift()!;
+      const frac = parts.join("");
+      normalizedCurrent = intPart + "." + frac;
+    }
+    
+    if (this._precision === 0) {
+      normalizedCurrent = normalizedCurrent.split(".")[0] || "0";
+    } else if (normalizedCurrent.includes(".")) {
+      const [i, f] = normalizedCurrent.split(".");
+      normalizedCurrent = i + "." + f.slice(0, this._precision);
+    }
+    
+    // If there's a selection, simulate deleting that portion
     if (caretStart !== caretEnd) {
-      const newValue = value.slice(0, caretStart) + value.slice(caretEnd);
-      return { newValue, newCaret: caretStart };
+      // Get the selected portion and remove numeric characters from it
+      const selectedPortion = currentFormatted.slice(caretStart, caretEnd);
+      const numericInSelection = selectedPortion.replace(/[^0-9.]/g, '');
+      
+      // This is complex - for now, just delete last digit
+      normalizedCurrent = normalizedCurrent.slice(0, -1) || "0";
+    } else {
+      // Count how many numeric characters are to the left of cursor
+      const numericCharsLeft = countNumericCharsLeft(
+        currentFormatted,
+        caretStart,
+        this._decimalSeparator
+      );
+      
+      // Delete the numeric character at that position
+      if (numericCharsLeft > 0) {
+        const chars = normalizedCurrent.split('');
+        let numericIndex = 0;
+        let deleteIndex = -1;
+        
+        for (let i = 0; i < chars.length; i++) {
+          if (DIGITS.test(chars[i]) || chars[i] === '.') {
+            numericIndex++;
+            if (numericIndex === numericCharsLeft) {
+              deleteIndex = i;
+              break;
+            }
+          }
+        }
+        
+        if (deleteIndex >= 0) {
+          chars.splice(deleteIndex, 1);
+          normalizedCurrent = chars.join('') || "0";
+        }
+      }
     }
+    
+    const newValue = parseFloat(normalizedCurrent) || 0;
+    
+    // Update value without triggering setter
+    this._value = newValue;
+    this.setAttribute("value", String(newValue));
 
-    // If caret is at the beginning, nothing to delete
-    if (caretStart === 0) {
-      return { newValue: value, newCaret: caretStart };
-    }
-
-    // Otherwise, delete one character before caret
-    const deletePos = caretStart - 1;
-    const newValue = value.slice(0, deletePos) + value.slice(caretStart);
-    const newCaret = deletePos;
-
-    return { newValue, newCaret };
+    // Render with cursor position context
+    this._render(currentFormatted, Math.max(0, caretStart - 1));
+    this._dispatchEvent("input");
   }
 
   private _onBack = (e: Event) => {
-    console.log('back', e);
-
     // Ignore when not in focus
-    const isFocused = (this.contains(document.activeElement) && this !== document.activeElement);
-    if (!isFocused || !e.isTrusted || (e instanceof CustomEvent)) return;
+    const isFocused =
+      this.contains(document.activeElement) || this === document.activeElement;
+    if (!isFocused || !e.isTrusted || e instanceof CustomEvent) return;
 
     // Prevent closing app when value isn't zero
     if (this.value !== 0) {
       e.preventDefault();
-
-      const { newValue, newCaret } = this._performBackspace();
-
-      this._input.value = newValue;
-      this._input.setSelectionRange(newCaret, newCaret);
-
-      // Re-parse and re-render into formatted currency
-      this._onInput(e);
+      this._performBackspace();
+      return;
     }
-  }
+  };
 
   private _onInput = (e: Event) => {
     const rawValue = ((e.target as HTMLInputElement) ?? this._input).value;
@@ -415,7 +462,13 @@ export class CurrencyInput extends HTMLDivElement {
       return;
     }
 
-    if (ALWAYS_ALLOWED.has(e.key)) return;
+    if (ALWAYS_ALLOWED.has(e.key)) {
+      if (e.key === "Backspace") {
+        e.preventDefault();
+        this._performBackspace();
+      }
+      return;
+    }
 
     const isDigit = ONLY_DIGITS.test(e.key);
     const isDot = e.key === this._decimalSeparator || e.key === ".";
