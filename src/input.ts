@@ -19,7 +19,11 @@ import {
 import { selectCurrency, showCurrencyList } from "./pages/currencyList";
 import { CurrencyInput } from "./components/currencyInput";
 import { setHeaderText } from "./components/header";
-import { hideCenterButton, setupAboutPage, showCenterButton } from "./components/softkeys";
+import {
+  hideCenterButton,
+  setupAboutPage,
+  showCenterButton,
+} from "./components/softkeys";
 import { getCountryForTimezone } from "./data/timezone";
 
 type InputIndex = 1 | 2;
@@ -29,7 +33,9 @@ let activeIndex: InputIndex = 1;
 let currency1: CurrencyCode =
   (localStorage.getItem("currency1") as CurrencyCode) ?? "inr";
 let currency2: CurrencyCode =
-  (localStorage.getItem("currency2") as CurrencyCode) ?? "usd";
+  ((localStorage.getItem("currency2") as CurrencyCode) ?? currency1 === "usd")
+    ? "inr"
+    : "usd";
 let quantity1 = 0;
 let quantity2 = 0;
 let exchangeRates: USDExchangeRateResponse | null = null;
@@ -175,10 +181,10 @@ function handleInputChange(event: KeyboardEvent) {
 
 function onBack(event: Event) {
   // Ignore CustomEvents
-  if (!event.isTrusted || (event instanceof CustomEvent)) return;
+  if (!event.isTrusted || event instanceof CustomEvent) return;
 
   // Don't exit the app unless the value is zero
-  const input = (focusIndex === 1) ? currencyInput1 : currencyInput2;
+  const input = focusIndex === 1 ? currencyInput1 : currencyInput2;
   if (input.value !== 0) {
     event.preventDefault();
   }

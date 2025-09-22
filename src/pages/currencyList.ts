@@ -1,11 +1,20 @@
 import { CURRENCIES, getCountryCode } from "../data/currencies";
 import { Currency, CurrencyCode } from "../data/currency";
-import { BACK, CURRENCY_SELECTED, CurrencySelectedEvent } from "../helpers/events";
+import {
+  BACK,
+  CURRENCY_SELECTED,
+  CurrencySelectedEvent,
+} from "../helpers/events";
 import { _ } from "../helpers/utils";
 import "./currencyList.css";
 import { focusHome, updateHomeHeader } from "../input";
 import { setHeaderText } from "../components/header";
-import { getInfoButtonState, hideCenterButton, setInfoButtonState, showInfoButton } from "../components/softkeys";
+import {
+  getInfoButtonState,
+  hideCenterButton,
+  setInfoButtonState,
+  showInfoButton,
+} from "../components/softkeys";
 import { hideSearch } from "./searchCurrency";
 
 const dialog = _("choose-currency") as HTMLDialogElement;
@@ -59,7 +68,10 @@ export function createListItem(currency: Currency) {
   item.lang = currency.languageCode;
 
   $(".fflag", clone)?.classList.add(`fflag-${countryCode}`);
-  $(".currency-symbol", clone).textContent = currency.currencySymbol.substring(0, 1);
+  $(".currency-symbol", clone).textContent = currency.currencySymbol.substring(
+    0,
+    1,
+  );
   $(".currency-name span", clone).textContent = currency.localCurrencyName;
   $(".currency-code", clone).textContent = currency.currencyCode;
 

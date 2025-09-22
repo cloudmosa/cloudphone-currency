@@ -1,8 +1,5 @@
 import { populateList } from "./pages/currencyList";
-import {
-  fetchUSDExchangeRates,
-  formatDate,
-} from "./api/exchangeRates";
+import { fetchUSDExchangeRates, formatDate } from "./api/exchangeRates";
 import { setup } from "./input";
 import "./components/currencyInput";
 import "./index.css";

@@ -4,7 +4,11 @@ import "./about.css";
 import { _ } from "../helpers/utils";
 import { focusHome, updateHomeHeader } from "../input";
 import { setHeaderText } from "../components/header";
-import { hideCenterButton, hideInfoButton, showInfoButton } from "../components/softkeys";
+import {
+  hideCenterButton,
+  hideInfoButton,
+  showInfoButton,
+} from "../components/softkeys";
 import { BACK } from "../helpers/events";
 
 const dialog = _("about") as HTMLDialogElement;

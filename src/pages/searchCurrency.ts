@@ -2,7 +2,12 @@ import { hideInfoButton, setInfoButtonState } from "../components/softkeys";
 import { CURRENCIES } from "../data/currencies";
 import { Currency } from "../data/currency";
 import { _ } from "../helpers/utils";
-import { createListItem, onCurrencyClick, queryCurrencyCode, scrollIntoViewIfNeeded } from "./currencyList";
+import {
+  createListItem,
+  onCurrencyClick,
+  queryCurrencyCode,
+  scrollIntoViewIfNeeded,
+} from "./currencyList";
 import "./searchCurrency.css";
 
 const dialog = _("search") as HTMLDialogElement;
@@ -13,32 +18,32 @@ let currentSearchText = "";
 
 function searchCurrencies(searchText: string) {
   return (a: Currency) => {
-      // Prefix match
-      const currencyCodeA = a.currencyCode.toLocaleLowerCase();
-      if (currencyCodeA.startsWith(searchText)) return true;
+    // Prefix match
+    const currencyCodeA = a.currencyCode.toLocaleLowerCase();
+    if (currencyCodeA.startsWith(searchText)) return true;
 
-      // Simple substring search
-      return `${a.englishCurrencyName} ${a.localCurrencyName}`
-        .toLocaleLowerCase()
-        .includes(searchText);
-    };
+    // Simple substring search
+    return `${a.englishCurrencyName} ${a.localCurrencyName}`
+      .toLocaleLowerCase()
+      .includes(searchText);
+  };
 }
 
 function sortCurrencies(searchText: string) {
   return (a: Currency, b: Currency) => {
-      const currencyCodeA = a.currencyCode.toLocaleLowerCase();
-      const currencyCodeB = b.currencyCode.toLocaleLowerCase();
+    const currencyCodeA = a.currencyCode.toLocaleLowerCase();
+    const currencyCodeB = b.currencyCode.toLocaleLowerCase();
 
-      // Exact currency code match
-      if (currencyCodeA === searchText) return -1;
-      if (currencyCodeB === searchText) return 1;
+    // Exact currency code match
+    if (currencyCodeA === searchText) return -1;
+    if (currencyCodeB === searchText) return 1;
 
-      // Prefix currency code match
-      if (currencyCodeA.startsWith(searchText)) return -1;
-      if (currencyCodeB.startsWith(searchText)) return 1;
+    // Prefix currency code match
+    if (currencyCodeA.startsWith(searchText)) return -1;
+    if (currencyCodeB.startsWith(searchText)) return 1;
 
-      return 0;
-    };
+    return 0;
+  };
 }
 
 function populateList() {
@@ -50,11 +55,13 @@ function populateList() {
   list.innerHTML = "";
   if (!searchText) return;
 
-  const searchResultsElement = CURRENCIES
-    .filter(searchCurrencies(searchText))
+  const searchResultsElement = CURRENCIES.filter(searchCurrencies(searchText))
     .sort(sortCurrencies(searchText))
     .map(createListItem)
-    .reduce((frag, item) => (frag.appendChild(item), frag), document.createDocumentFragment());
+    .reduce(
+      (frag, item) => (frag.appendChild(item), frag),
+      document.createDocumentFragment(),
+    );
 
   list.append(searchResultsElement);
   currentSearchText = searchText;
