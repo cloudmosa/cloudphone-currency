@@ -163,7 +163,7 @@ function handleFocus(ev: FocusEvent) {
 
   const el = $<HTMLDivElement>(".currency-name", target);
   const overflowing =
-    el.scrollHeight >= el.clientHeight || el.scrollWidth >= el.clientWidth;
+    el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
 
   if (overflowing) target.classList.add("marquee");
 }

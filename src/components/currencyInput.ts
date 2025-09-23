@@ -454,14 +454,15 @@ export class CurrencyInput extends HTMLDivElement {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       e.preventDefault(); // prevent browser default move
       const value = this._input.value;
-      let pos = this._input.selectionStart ?? 0;
+      const start = this._currencySymbol.length;
+      let pos = this._input.selectionStart ?? start;
 
       // Reversed for RTL
       if (e.key === "ArrowLeft" || isRTL) {
         // move left to the next numeric/decimal character
-        pos = Math.max(0, pos - 1);
+        pos = Math.max(start, pos - 1);
         while (
-          pos > 0 &&
+          pos > start &&
           !DIGITS.test(value[pos - 1]) &&
           value[pos - 1] !== this._decimalSeparator &&
           value[pos - 1] !== DEFAULT_DECIMAL_SEPARATOR

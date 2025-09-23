@@ -45,6 +45,7 @@ type InputIndex = 1 | 2;
 
 let focusIndex: InputIndex = 1;
 let activeIndex: InputIndex = 1;
+let setupFinished = false;
 
 const defaultCurrency1 = "inr";
 let currency1: CurrencyCode =
@@ -179,7 +180,6 @@ function handleInputChange(event: KeyboardEvent) {
       }
       return;
     case "Enter":
-      console.log("Enter", event);
       if (event.type === "keyup") {
         activeIndex = focusIndex;
         openCurrencyDialog();
@@ -231,7 +231,7 @@ function onBack(event: Event) {
 
   setCurrencyState(index, { quantity: input.value });
   requestAnimationFrame(updateUI);
-  
+
   wasZero = isZero;
 }
 
@@ -261,7 +261,17 @@ export function updateHomeHeader() {
   const _currency1 = findCurrency(currency1)!;
   const _currency2 = findCurrency(currency2)!;
 
-  setHeaderText(`${_currency1.currencySymbol} → ${_currency2.currencySymbol}`);
+  // In cases where the currency symbols are the same (i.e. $ → $)
+  // Use currency codes instead (i.e. USD → NZD)
+  if (_currency1.currencySymbol === _currency2.currencySymbol) {
+    setHeaderText(
+      `${_currency1.currencyCode.toLocaleUpperCase()} → ${_currency2.currencyCode.toLocaleUpperCase()}`,
+    );
+  } else {
+    setHeaderText(
+      `${_currency1.currencySymbol} → ${_currency2.currencySymbol}`,
+    );
+  }
 }
 
 function reverseCurrencies() {
@@ -293,6 +303,7 @@ function reverseCurrencies() {
 }
 
 function openCurrencyDialog() {
+  if (!setupFinished) return;
   // Don't allow selection of already-selected currencies
   selectCurrency(activeIndex === 1 ? currency2 : currency1, false);
   selectCurrency(activeIndex === 1 ? currency1 : currency2, true);
@@ -325,6 +336,9 @@ function handleReverseButtonKeydown(e: KeyboardEvent) {
 }
 
 function bindInputs() {
+  reverseButton.addEventListener("keydown", handleReverseButtonKeydown);
+  window.addEventListener("keydown", onGlobalKeyDown);
+
   [currencyInput1, currencyInput2].forEach((input) => {
     input.value = 0;
     input.addEventListener("keydown", handleInputChange);
@@ -336,9 +350,6 @@ function bindInputs() {
   [currencyLabel1, currencyLabel2].forEach((label) =>
     label.addEventListener("click", onCurrencyLabelClick),
   );
-
-  reverseButton.addEventListener("keydown", handleReverseButtonKeydown);
-  window.addEventListener("keydown", onGlobalKeyDown);
 }
 
 function onCurrencySelected(event: Event) {
@@ -384,6 +395,10 @@ export function setup(rates: USDExchangeRateResponse) {
   window.addEventListener(BACK, onBack);
   window.addEventListener(SEARCH, onSearch);
   document.forms[0].addEventListener("submit", onFormSubmit);
+
+  queueMicrotask(() => {
+    setupFinished = true;
+  });
 }
 
 updateHomeHeader();
