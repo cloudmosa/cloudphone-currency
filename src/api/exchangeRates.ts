@@ -70,9 +70,9 @@ export function fetchExchangeRates(
   // Fetch and cache exchange rates
   return fetchWithFallback(`currencies/${baseCurrency}.min.json`).then(
     (responseJson) => {
-      const exchageResponse = responseJson as ExchangeRateResponse;
-      exchangeRateCache.set(baseCurrency, exchageResponse);
-      return exchageResponse;
+      const exchangeResponse = responseJson as ExchangeRateResponse;
+      exchangeRateCache.set(baseCurrency, exchangeResponse);
+      return exchangeResponse;
     },
   );
 }
