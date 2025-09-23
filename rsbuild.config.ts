@@ -36,4 +36,9 @@ export default defineConfig({
     },
     favicon: './assets/img/favicon.ico',
   },
+  source: {
+    define: {
+      'process.env.BUILD_HASH': JSON.stringify(process.env.BUILD_HASH),
+    },
+  },
 });

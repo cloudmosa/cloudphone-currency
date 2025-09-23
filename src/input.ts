@@ -176,6 +176,7 @@ function handleInputChange(event: KeyboardEvent) {
       if (event.type === "keydown") {
         if (wasZero && input.value === 0) {
           requestAnimationFrame(() => window.close());
+          return;
         }
       }
 
@@ -220,6 +221,11 @@ function updateLabel(label: HTMLLabelElement, code: CurrencyCode) {
   if (!currency) return;
   const country = getCountryCode(currency);
   label.innerHTML = `${code.toUpperCase()} <div><i class="fflag fflag-${country} ff-round ff-md">`;
+}
+
+function handleInputBack() {
+  // Propogated from Back event
+  requestAnimationFrame(updateUI);
 }
 
 export function updateHomeHeader() {
@@ -297,6 +303,7 @@ function bindInputs() {
     input.addEventListener("keyup", handleInputChange);
     input.addEventListener("focus", handleFocus);
     input.addEventListener("blur", handleBlur);
+    input.addEventListener(BACK, handleInputBack);
   });
 
   [currencyLabel1, currencyLabel2].forEach((label) =>

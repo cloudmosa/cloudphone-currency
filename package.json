@@ -7,13 +7,13 @@
     "typescript": "^5.9.2"
   },
   "name": "cloudphone-currency",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Currency converter for Cloud Phone keypad phones",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "rsbuild build",
-    "dev": "rsbuild dev --open",
-    "preview": "rsbuild preview"
+    "build": "BUILD_HASH=$(git rev-parse HEAD) rsbuild build",
+    "dev": "BUILD_HASH=dev rsbuild dev --open",
+    "preview": "BUILD_HASH=preview rsbuild preview"
   },
   "repository": {
     "type": "git",

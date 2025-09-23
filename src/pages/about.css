@@ -23,7 +23,8 @@
 
 #about h2,
 #about p,
-#about .icon {
+#about .icon,
+#about small {
   display: block;
   color: white;
 }
@@ -36,6 +37,14 @@
 
 #about p {
   margin: 0;
+}
+
+#about small {
+  text-align: start;
+  width: 100%;
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+  opacity: 0.7;
 }
 
 /* QVGA (or bigger) */
@@ -51,6 +60,10 @@
 
   #about p {
     font-size: 15pt;
+  }
+
+  #about small {
+    font-size: 12pt;
   }
 }
 
@@ -68,5 +81,9 @@
 
   #about p {
     font-size: 8pt;
+  }
+
+  #about small {
+    font-size: 6pt;
   }
 }
