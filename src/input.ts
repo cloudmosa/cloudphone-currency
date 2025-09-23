@@ -17,7 +17,11 @@ import {
   CurrencySelectedEvent,
   SEARCH,
 } from "./helpers/events";
-import { selectCurrency, showCurrencyList } from "./pages/currencyList";
+import {
+  isCurrencyListOpen,
+  selectCurrency,
+  showCurrencyList,
+} from "./pages/currencyList";
 import { CurrencyInput } from "./components/currencyInput";
 import { setHeaderText } from "./components/header";
 import {
@@ -26,7 +30,11 @@ import {
   showCenterButton,
 } from "./components/softkeys";
 import { getCountryForTimezone } from "./data/timezone";
-import { selectCurrencies as selectSearchCurrencies } from "./pages/searchCurrency";
+import {
+  isSearchOpen,
+  selectCurrencies as selectSearchCurrencies,
+} from "./pages/searchCurrency";
+import { isAboutOpen } from "./pages/about";
 
 // localStorage keys
 const CURRENCY1 = "currency1";
@@ -117,13 +125,17 @@ const setCurrencyState = (
       currency1 = updates.currency;
       stateMap[index]().input.currency = currency1;
     }
-    if (updates.quantity != null) quantity1 = updates.quantity;
+    if (updates.quantity !== null && updates.quantity !== undefined) {
+      quantity1 = updates.quantity;
+    }
   } else {
     if (updates.currency) {
       currency2 = updates.currency;
       stateMap[index]().input.currency = currency2;
     }
-    if (updates.quantity != null) quantity2 = updates.quantity;
+    if (updates.quantity !== null && updates.quantity !== undefined) {
+      quantity2 = updates.quantity;
+    }
   }
 
   storeCurrency();
@@ -167,21 +179,12 @@ function handleInputChange(event: KeyboardEvent) {
       }
       return;
     case "Enter":
+      console.log("Enter", event);
       if (event.type === "keyup") {
         activeIndex = focusIndex;
         openCurrencyDialog();
       }
       return;
-    case "Backspace":
-      // Exit app after Backspace when value is zero
-      if (event.type === "keydown") {
-        const isZero = input.value === 0;
-        if (wasZero && isZero) {
-          requestAnimationFrame(() => window.close());
-          return;
-        }
-      }
-      break;
   }
 
   wasZero = input.value === 0;
@@ -192,11 +195,27 @@ function handleInputChange(event: KeyboardEvent) {
   updateUI();
 }
 
+function onGlobalKeyDown(event: KeyboardEvent) {
+  // Treat Backspace like the Back window event
+  if (event.key === "Backspace" && event.type === "keydown") {
+    queueMicrotask(() => {
+      console.log("dispatch", BACK);
+      window.dispatchEvent(new CustomEvent(BACK, { cancelable: true }));
+    });
+    event.preventDefault();
+  }
+}
+
+function onHomePage() {
+  return !(isAboutOpen() || isSearchOpen() || isCurrencyListOpen());
+}
+
 function onBack(event: Event) {
+  console.log("onBack", event, onHomePage());
   event.preventDefault();
 
-  // Ignore CustomEvents
-  if (!event.isTrusted || event instanceof CustomEvent) return;
+  // Don't handle when we're not on the home page
+  if (!onHomePage()) return;
 
   // Don't exit the app unless the value is zero
   const input = focusIndex === 1 ? currencyInput1 : currencyInput2;
@@ -240,7 +259,7 @@ export function updateHomeHeader() {
   setHeaderText(`${_currency1.currencySymbol} → ${_currency2.currencySymbol}`);
 }
 
-export function reverseCurrencies() {
+function reverseCurrencies() {
   // Flip values
   [currency1, currency2] = [currency2, currency1];
   [quantity1, quantity2] = [quantity2, quantity1];
@@ -314,6 +333,7 @@ function bindInputs() {
   );
 
   reverseButton.addEventListener("keydown", handleReverseButtonKeydown);
+  window.addEventListener("keydown", onGlobalKeyDown);
 }
 
 function onCurrencySelected(event: Event) {
@@ -339,6 +359,11 @@ export function focusHome() {
   showCenterButton();
 }
 
+export function dispatchInputEvent(event: Event) {
+  const input = focusIndex === 1 ? currencyInput1 : currencyInput2;
+  input.dispatchEvent(event);
+}
+
 function onFormSubmit(event: SubmitEvent) {
   event.preventDefault();
 }
@@ -353,7 +378,7 @@ export function setup(rates: USDExchangeRateResponse) {
   window.addEventListener(CURRENCY_SELECTED, onCurrencySelected);
   window.addEventListener(BACK, onBack);
   window.addEventListener(SEARCH, onSearch);
-  document.forms[0].addEventListener('submit', onFormSubmit);
+  document.forms[0].addEventListener("submit", onFormSubmit);
 }
 
 updateHomeHeader();

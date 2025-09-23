@@ -139,6 +139,10 @@ function handleInputChange() {
   populateList();
 }
 
+export function isSearchOpen() {
+  return dialog.open === true;
+}
+
 export function showSearch() {
   input.addEventListener("keydown", handleInputKeydown);
   input.addEventListener("change", handleInputChange);

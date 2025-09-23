@@ -171,6 +171,36 @@ div[currency] {
   }
 }
 
+#toast {
+  display: block;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0.5em;
+  right: 0.5em;
+  width: calc(100% - 2em);
+  background-color: #0d6efd;
+  color: #fff;
+  padding: 0.5em;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: visible;
+  transition:
+    opacity 0.3s ease-in-out,
+    visibility 0.3s ease-in-out;
+  z-index: 1000;
+  pointer-events: none;
+  user-select: none;
+}
+
+#toast:not([aria-disabled="true"]),
+#toast.show {
+  opacity: 1;
+  visibility: visible;
+}
+
 /* QQVGA */
 @media only screen and (max-width: 128px) {
   #reverse {

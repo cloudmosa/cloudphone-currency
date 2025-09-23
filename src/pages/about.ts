@@ -13,9 +13,13 @@ import { BACK } from "../helpers/events";
 import { version } from "../../package.json";
 import { ExchangeRateDate, formatDate } from "../api/exchangeRates";
 import { getCountryForTimezone } from "../data/timezone";
+import { showToast } from "../components/toast";
 
 const dialog = _("about") as HTMLDialogElement;
 const asOfDate = _("as-of-date") as HTMLElement;
+
+const TARGET_KEY = "Escape";
+const REPEAT_COUNT = 7;
 
 function getCloudPhoneVersion() {
   try {
@@ -67,9 +71,42 @@ export function setupAboutContent(rateDate: ExchangeRateDate) {
   dialog.firstElementChild?.appendChild(paragraph);
 }
 
+function onSoftLeftRepeat() {
+  // Erase data to reset app
+  localStorage.clear();
+
+  showToast("Data Cleared!");
+}
+
+let consecutivePresses = 0;
+let lastKeyPressed: string | null = null;
+
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === TARGET_KEY) {
+    if (lastKeyPressed === TARGET_KEY) {
+      consecutivePresses++;
+    } else {
+      consecutivePresses = 1;
+    }
+    lastKeyPressed = TARGET_KEY;
+
+    if (consecutivePresses === REPEAT_COUNT) {
+      onSoftLeftRepeat();
+      consecutivePresses = 0;
+    }
+  } else {
+    consecutivePresses = 0;
+    lastKeyPressed = event.key;
+  }
+}
+
 function handleBackEvent(ev: Event) {
   ev.preventDefault();
-  hideAbout();
+  requestAnimationFrame(hideAbout);
+}
+
+export function isAboutOpen() {
+  return dialog.open === true;
 }
 
 export function showAbout() {
@@ -80,6 +117,7 @@ export function showAbout() {
   hideInfoButton();
   hideCenterButton();
   window.addEventListener(BACK, handleBackEvent);
+  window.addEventListener("keyup", handleKeyDown);
 }
 
 export function hideAbout() {
@@ -88,4 +126,5 @@ export function hideAbout() {
   showInfoButton();
   focusHome();
   window.removeEventListener(BACK, handleBackEvent);
+  window.removeEventListener("keyup", handleKeyDown);
 }

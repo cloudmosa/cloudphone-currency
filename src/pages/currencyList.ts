@@ -116,9 +116,9 @@ export function selectCurrency(
 function handleBackEvent(ev: Event) {
   ev.preventDefault();
   if (getInfoButtonState() === "search") {
-    hideSearch();
+    requestAnimationFrame(hideSearch);
   }
-  hideCurrencyList();
+  requestAnimationFrame(hideCurrencyList);
 }
 
 function handleKeydown(ev: KeyboardEvent) {
@@ -159,11 +159,11 @@ function handleKeyUp(ev: KeyboardEvent) {
 function handleFocus(ev: FocusEvent) {
   const target = ev.target as HTMLLIElement;
 
-  if (target.tagName != "LI") return;
+  if (target.tagName !== "LI") return;
 
   const el = $<HTMLDivElement>(".currency-name", target);
   const overflowing =
-    el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
+    el.scrollHeight >= el.clientHeight || el.scrollWidth >= el.clientWidth;
 
   if (overflowing) target.classList.add("marquee");
 }
@@ -172,6 +172,10 @@ function handleBlur(ev: FocusEvent) {
   const target = ev.target as HTMLLIElement;
 
   target.classList.remove("marquee");
+}
+
+export function isCurrencyListOpen() {
+  return dialog.open === true;
 }
 
 export const showCurrencyList = () => {

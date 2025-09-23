@@ -16,7 +16,6 @@ const DEFAULT_GROUP_SEPARATOR = ",";
 const DEFAULT_CURRENCY_SYMBOL = "$";
 
 const ALWAYS_ALLOWED = new Set([
-  "Backspace",
   "Delete",
   "ArrowUp",
   "ArrowDown",
@@ -389,7 +388,9 @@ export class CurrencyInput extends HTMLDivElement {
 
   private _onBack = (e: Event) => {
     // Ignore when not in focus
-    if (!this.isFocused() || !e.isTrusted || e instanceof CustomEvent) return;
+    const focused = this.isFocused();
+    console.log("onBack", e, focused);
+    if (!focused) return;
 
     // Prevent closing app when value isn't zero
     if (this.value !== 0) {
@@ -484,13 +485,7 @@ export class CurrencyInput extends HTMLDivElement {
       return;
     }
 
-    if (ALWAYS_ALLOWED.has(e.key)) {
-      if (e.key === "Backspace") {
-        e.preventDefault();
-        this._performBackspace();
-      }
-      return;
-    }
+    if (ALWAYS_ALLOWED.has(e.key)) return;
 
     const isDigit = ONLY_DIGITS.test(e.key);
     const isDot =
