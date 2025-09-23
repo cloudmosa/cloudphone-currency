@@ -175,16 +175,16 @@ function handleInputChange(event: KeyboardEvent) {
     case "Backspace":
       // Exit app after Backspace when value is zero
       if (event.type === "keydown") {
-        if (wasZero && input.value === 0) {
+        const isZero = input.value === 0;
+        if (wasZero && isZero) {
           requestAnimationFrame(() => window.close());
           return;
         }
       }
-
-      wasZero = input.value === 0;
       break;
   }
 
+  wasZero = input.value === 0;
   const index = input === currencyInput1 ? 1 : 2;
   focusIndex = index;
 
@@ -193,15 +193,22 @@ function handleInputChange(event: KeyboardEvent) {
 }
 
 function onBack(event: Event) {
+  event.preventDefault();
+
   // Ignore CustomEvents
   if (!event.isTrusted || event instanceof CustomEvent) return;
 
   // Don't exit the app unless the value is zero
   const input = focusIndex === 1 ? currencyInput1 : currencyInput2;
-  if (input.value !== 0) {
-    event.preventDefault();
-    requestAnimationFrame(updateUI);
+  const isZero = input.value === 0;
+
+  if (wasZero && isZero) {
+    requestAnimationFrame(() => window.close());
+    return;
   }
+
+  requestAnimationFrame(updateUI);
+  wasZero = isZero;
 }
 
 function onSearch() {
