@@ -340,7 +340,7 @@ export function setup(rates: USDExchangeRateResponse) {
   updateLabel(currencyLabel1, currency1);
   updateLabel(currencyLabel2, currency2);
   window.addEventListener(CURRENCY_SELECTED, onCurrencySelected);
-  window.addEventListener(BACK, onBack);
+  window.addEventListener(BACK, onBack, true);
   window.addEventListener(SEARCH, onSearch);
 }
 

@@ -12,6 +12,7 @@ import {
 import { BACK } from "../helpers/events";
 import { version } from "../../package.json";
 import { ExchangeRateDate, formatDate } from "../api/exchangeRates";
+import { getCountryForTimezone } from "../data/timezone";
 
 const dialog = _("about") as HTMLDialogElement;
 const asOfDate = _("as-of-date") as HTMLElement;
@@ -60,8 +61,9 @@ export function setupAboutContent(rateDate: ExchangeRateDate) {
 
   // Add details to UI
   const timeZone = new Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const guessedCountry = getCountryForTimezone(timeZone)?.id || "~";
   const paragraph = document.createElement("small");
-  paragraph.innerHTML = `v${version} (${process.env.BUILD_HASH?.substring(0, 8)})<br />${getPlatform()}<br />${timeZone}`;
+  paragraph.innerHTML = `v${version} (${process.env.BUILD_HASH?.substring(0, 8)})<br />${getPlatform()}<br />${timeZone} (${guessedCountry})`;
   dialog.firstElementChild?.appendChild(paragraph);
 }
 
