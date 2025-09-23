@@ -65,7 +65,9 @@ function populateList() {
       document.createDocumentFragment(),
     );
 
-  selectedCurrencies.forEach((c) => setSelectedCurrency(c, false, searchResultsElement));
+  selectedCurrencies.forEach((c) =>
+    setSelectedCurrency(c, false, searchResultsElement),
+  );
 
   list.append(searchResultsElement);
   currentSearchText = searchText;
@@ -152,7 +154,10 @@ export function showSearch() {
   dialog.open = true;
   setInfoButtonState("search");
   hideInfoButton();
-  input.focus();
+
+  // Automatically focus search input
+  input.autofocus = true;
+  requestAnimationFrame(() => input.focus());
 }
 
 export function hideSearch() {
@@ -161,6 +166,7 @@ export function hideSearch() {
   input.removeEventListener("keydown", handleInputKeydown);
   input.removeEventListener("change", handleInputChange);
   input.removeEventListener("input", handleInputChange);
+  input.autofocus = false;
 
   list.removeEventListener("keydown", handleListKeydown, true);
   list.removeEventListener("keyup", handleListKeyUp, true);

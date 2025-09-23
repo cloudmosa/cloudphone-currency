@@ -12,6 +12,15 @@ const LATEST = "latest";
 
 export type ExchangeRateDate = typeof LATEST | IsoDateString;
 
+// Important: don't cache the response, always get latest rates
+const FETCH_REQUEST_INIT: RequestInit = {
+  cache: "no-store",
+  credentials: "omit",
+  mode: "cors",
+  priority: "high",
+  referrerPolicy: "no-referrer",
+};
+
 function fetchWithFallback(
   endpoint: string,
   date: ExchangeRateDate = LATEST,
@@ -25,13 +34,19 @@ function fetchWithFallback(
     `https://${date}.currency-api.pages.dev/${apiVersion}/${endpoint}`,
   );
 
-  return fetch(JSDELIVR_URL)
-    .catch(() => fetch(CLOUDFLARE_URL))
+  // Cache busting parameters
+  JSDELIVR_URL.searchParams.set('z', Date.now().toString());
+  CLOUDFLARE_URL.searchParams.set('z', Date.now().toString());
+
+  return fetch(JSDELIVR_URL, FETCH_REQUEST_INIT)
+    .catch(() => fetch(CLOUDFLARE_URL, FETCH_REQUEST_INIT))
     .then((response) => response.json());
 }
 
 export function formatDate(date: ExchangeRateDate) {
-  return new Intl.DateTimeFormat(navigator.language).format(new Date(date));
+  return new Intl.DateTimeFormat(navigator.language, {
+    timeZone: "Etc/UTC",
+  }).format(new Date(date));
 }
 
 export type ExchangeRateResponse = {

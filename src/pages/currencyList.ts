@@ -93,7 +93,11 @@ function unselectCurrency() {
     });
 }
 
-export function selectCurrency(code: CurrencyCode, focus: boolean = true, currencyList: HTMLElement | DocumentFragment = list) {
+export function selectCurrency(
+  code: CurrencyCode,
+  focus: boolean = true,
+  currencyList: HTMLElement | DocumentFragment = list,
+) {
   const el = currencyList.querySelector(
     `[data-code="${code}"]`,
   ) as HTMLDivElement | null;

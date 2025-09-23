@@ -11,6 +11,10 @@ const ONLY_DIGITS = new RegExp(/^[0-9]$/);
 const NON_DECIMAL = new RegExp("[^0-9\\-\\:\\:DEC]", "g");
 const TRUTHY = new Set(["true", "TRUE", "yes", "YES", "on", "ON"]);
 
+const DEFAULT_DECIMAL_SEPARATOR = ".";
+const DEFAULT_GROUP_SEPARATOR = ",";
+const DEFAULT_CURRENCY_SYMBOL = "$";
+
 const ALWAYS_ALLOWED = new Set([
   "Backspace",
   "Delete",
@@ -45,9 +49,9 @@ function updateFormatter(currencyCode: string) {
 
   return {
     fmt,
-    decimalSeparator: decPart?.value ?? ".",
-    groupSeparator: grpPart?.value ?? ",",
-    currencySymbol: currency?.currencySymbol ?? "$",
+    decimalSeparator: decPart?.value ?? DEFAULT_DECIMAL_SEPARATOR,
+    groupSeparator: grpPart?.value ?? DEFAULT_GROUP_SEPARATOR,
+    currencySymbol: currency?.currencySymbol ?? DEFAULT_CURRENCY_SYMBOL,
   };
 }
 
@@ -69,7 +73,7 @@ function toNormalizedNumericString(
     .replace(decimalSeparator, placeholder);
 
   temp = temp.replace(NON_DECIMAL, "");
-  temp = temp.replace(placeholder, ".");
+  temp = temp.replace(placeholder, DEFAULT_DECIMAL_SEPARATOR);
   return temp;
 }
 
@@ -83,7 +87,7 @@ function countNumericCharsLeft(
   for (let ch of left) {
     if (DIGITS.test(ch)) count++;
     else if (ch === decimalSeparator) count++;
-    else if (ch === ".") count++;
+    else if (ch === DEFAULT_DECIMAL_SEPARATOR) count++;
   }
   return count;
 }
@@ -97,12 +101,15 @@ function numericPositionsInFormatted(
     const ch = formatted[i];
     if (DIGITS.test(ch)) positions.push(i);
     else if (ch === decimalSeparator) positions.push(i);
-    else if (ch === ".") positions.push(i);
+    else if (ch === DEFAULT_DECIMAL_SEPARATOR) positions.push(i);
   }
   return positions;
 }
 
 export class CurrencyInput extends HTMLDivElement {
+  // Allows input participate in form submission, validation,
+  // and to be associated with <label> elements
+  static formAssociated = true;
   static get observedAttributes() {
     return ["currency", "value", "disabled", "readonly", "id", "name"];
   }
@@ -115,9 +122,9 @@ export class CurrencyInput extends HTMLDivElement {
   private _value: number = 0;
 
   private _fmt!: Intl.NumberFormat;
-  private _decimalSeparator: string = ".";
-  private _groupSeparator: string = ",";
-  private _currencySymbol: string = "$";
+  private _decimalSeparator: string = DEFAULT_DECIMAL_SEPARATOR;
+  private _groupSeparator: string = DEFAULT_GROUP_SEPARATOR;
+  private _currencySymbol: string = DEFAULT_CURRENCY_SYMBOL;
 
   focus(options?: FocusOptions): void {
     this._input.focus(options);
@@ -138,6 +145,8 @@ export class CurrencyInput extends HTMLDivElement {
     this._input = document.createElement("input");
     this._input.type = "text";
     this._input.inputMode = "decimal";
+
+    // Important: this disables the fullscreen text input screen on Cloud Phone
     this._input.setAttribute("x-puffin-entersfullscreen", "off");
 
     this._shadow.appendChild(this._input);
@@ -202,9 +211,16 @@ export class CurrencyInput extends HTMLDivElement {
     }
   }
 
+  isFocused(): boolean {
+    return (
+      this.contains(document.activeElement) || this === document.activeElement
+    );
+  }
+
   get value() {
     return this._value;
   }
+
   set value(v: number) {
     const n = typeof v === "number" && !Number.isNaN(v) ? v : Number(v);
     if (Number.isNaN(n)) return;
@@ -217,6 +233,7 @@ export class CurrencyInput extends HTMLDivElement {
   get currency() {
     return this._currency;
   }
+
   set currency(code: string) {
     if (!code) return;
     this._currency = code;
@@ -287,75 +304,76 @@ export class CurrencyInput extends HTMLDivElement {
 
   private _performBackspace() {
     const currentFormatted = this._input.value;
-    const caretStart = this._input.selectionStart ?? 0;
-    const caretEnd = this._input.selectionEnd ?? caretStart;
+    let caretStart = this._input.selectionStart ?? 0;
+
+    // Look one character back when deleting a decimal separator
+    const previousCharacter = currentFormatted.substring(caretStart - 1, caretStart);
+    if (previousCharacter === this._decimalSeparator || previousCharacter === DEFAULT_DECIMAL_SEPARATOR) {
+      caretStart = caretStart - 1;
+    }
 
     // Normalize the current formatted value to get the numeric string
     let normalizedCurrent = toNormalizedNumericString(
       currentFormatted,
       this._currencySymbol,
       this._groupSeparator,
-      this._decimalSeparator
+      this._decimalSeparator,
     );
-    
+
     // Handle precision
-    const parts = normalizedCurrent.split(".");
+    const parts = normalizedCurrent.split(DEFAULT_DECIMAL_SEPARATOR);
     if (parts.length > 1) {
       const intPart = parts.shift()!;
       const frac = parts.join("");
-      normalizedCurrent = intPart + "." + frac;
+      normalizedCurrent = intPart + DEFAULT_DECIMAL_SEPARATOR + frac;
     }
-    
+
     if (this._precision === 0) {
-      normalizedCurrent = normalizedCurrent.split(".")[0] || "0";
-    } else if (normalizedCurrent.includes(".")) {
-      const [i, f] = normalizedCurrent.split(".");
-      normalizedCurrent = i + "." + f.slice(0, this._precision);
+      normalizedCurrent =
+        normalizedCurrent.split(this._decimalSeparator)[0] || "0";
+    } else if (normalizedCurrent.includes(this._decimalSeparator)) {
+      const [i, f] = normalizedCurrent.split(this._decimalSeparator);
+      normalizedCurrent =
+        i + this._decimalSeparator + f.slice(0, this._precision);
     }
-    
-    // If there's a selection, simulate deleting that portion
-    if (caretStart !== caretEnd) {
-      // Get the selected portion and remove numeric characters from it
-      const selectedPortion = currentFormatted.slice(caretStart, caretEnd);
-      const numericInSelection = selectedPortion.replace(/[^0-9.]/g, '');
-      
-      // This is complex - for now, just delete last digit
-      normalizedCurrent = normalizedCurrent.slice(0, -1) || "0";
-    } else {
-      // Count how many numeric characters are to the left of cursor
-      const numericCharsLeft = countNumericCharsLeft(
-        currentFormatted,
-        caretStart,
-        this._decimalSeparator
-      );
-      
-      // Delete the numeric character at that position
-      if (numericCharsLeft > 0) {
-        const chars = normalizedCurrent.split('');
-        let numericIndex = 0;
-        let deleteIndex = -1;
-        
-        for (let i = 0; i < chars.length; i++) {
-          if (DIGITS.test(chars[i]) || chars[i] === '.') {
-            numericIndex++;
-            if (numericIndex === numericCharsLeft) {
-              deleteIndex = i;
-              break;
-            }
+
+    // TODO: consider case when there's a selection (caretStart !== caretEnd)
+    // This isn't possible on Cloud Phone, so it's currently ignored
+
+    // Count how many numeric characters are to the left of cursor
+    const numericCharsLeft = countNumericCharsLeft(
+      currentFormatted,
+      caretStart,
+      this._decimalSeparator,
+    );
+
+    // Delete the numeric character at that position
+    if (numericCharsLeft > 0) {
+      const chars = normalizedCurrent.split("");
+      let numericIndex = 0;
+      let deleteIndex = -1;
+
+      for (let i = 0; i < chars.length; i++) {
+        if (DIGITS.test(chars[i]) || chars[i] === this._decimalSeparator) {
+          numericIndex++;
+          if (numericIndex === numericCharsLeft) {
+            deleteIndex = i;
+            break;
           }
         }
-        
-        if (deleteIndex >= 0) {
-          chars.splice(deleteIndex, 1);
-          normalizedCurrent = chars.join('') || "0";
-        }
+      }
+
+      if (deleteIndex >= 0) {
+        chars.splice(deleteIndex, 1);
+        normalizedCurrent = chars.join("") || "0";
       }
     }
-    
+
     const newValue = parseFloat(normalizedCurrent) || 0;
-    
-    // Update value without triggering setter
+
+    // Update value immediately
     this._value = newValue;
+    this._input.value = String(newValue);
     this.setAttribute("value", String(newValue));
 
     // Render with cursor position context
@@ -365,9 +383,7 @@ export class CurrencyInput extends HTMLDivElement {
 
   private _onBack = (e: Event) => {
     // Ignore when not in focus
-    const isFocused =
-      this.contains(document.activeElement) || this === document.activeElement;
-    if (!isFocused || !e.isTrusted || e instanceof CustomEvent) return;
+    if (!this.isFocused() || !e.isTrusted || e instanceof CustomEvent) return;
 
     // Prevent closing app when value isn't zero
     if (this.value !== 0) {
@@ -388,20 +404,20 @@ export class CurrencyInput extends HTMLDivElement {
       this._decimalSeparator,
     );
 
-    const parts = norm.split(".");
+    const parts = norm.split(this._decimalSeparator);
     if (parts.length > 1) {
       const intPart = parts.shift()!;
       const frac = parts.join("");
-      norm = intPart + "." + frac;
+      norm = intPart + this._decimalSeparator + frac;
     } else {
       norm = parts[0];
     }
 
     if (this._precision === 0) {
-      norm = norm.split(".")[0] || "0";
-    } else if (norm.includes(".")) {
-      const [i, f] = norm.split(".");
-      norm = i + "." + f.slice(0, this._precision);
+      norm = norm.split(this._decimalSeparator)[0] || "0";
+    } else if (norm.includes(this._decimalSeparator)) {
+      const [i, f] = norm.split(this._decimalSeparator);
+      norm = i + this._decimalSeparator + f.slice(0, this._precision);
     }
 
     const number = Number(norm);
@@ -441,7 +457,7 @@ export class CurrencyInput extends HTMLDivElement {
           pos > 0 &&
           !DIGITS.test(value[pos - 1]) &&
           value[pos - 1] !== this._decimalSeparator &&
-          value[pos - 1] !== "."
+          value[pos - 1] !== DEFAULT_DECIMAL_SEPARATOR
         ) {
           pos--;
         }
@@ -452,7 +468,7 @@ export class CurrencyInput extends HTMLDivElement {
           pos < value.length &&
           !DIGITS.test(value[pos]) &&
           value[pos] !== this._decimalSeparator &&
-          value[pos] !== "."
+          value[pos] !== DEFAULT_DECIMAL_SEPARATOR
         ) {
           pos++;
         }
@@ -471,7 +487,8 @@ export class CurrencyInput extends HTMLDivElement {
     }
 
     const isDigit = ONLY_DIGITS.test(e.key);
-    const isDot = e.key === this._decimalSeparator || e.key === ".";
+    const isDot =
+      e.key === this._decimalSeparator || e.key === DEFAULT_DECIMAL_SEPARATOR;
 
     if (isDigit) return;
 
@@ -479,7 +496,7 @@ export class CurrencyInput extends HTMLDivElement {
       if (
         this._precision === 0 ||
         this._input.value.includes(this._decimalSeparator) ||
-        this._input.value.includes(".")
+        this._input.value.includes(DEFAULT_DECIMAL_SEPARATOR)
       ) {
         e.preventDefault();
       }

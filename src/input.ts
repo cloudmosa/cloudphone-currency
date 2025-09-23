@@ -26,18 +26,26 @@ import {
   showCenterButton,
 } from "./components/softkeys";
 import { getCountryForTimezone } from "./data/timezone";
-import { selectCurrencies as selectSearchCurrencies} from "./pages/searchCurrency";
+import { selectCurrencies as selectSearchCurrencies } from "./pages/searchCurrency";
+
+// localStorage keys
+const CURRENCY1 = "currency1";
+const CURRENCY2 = "currency2";
+const COUNTRY_GUESSED = "countryGuessed";
 
 type InputIndex = 1 | 2;
 
 let focusIndex: InputIndex = 1;
 let activeIndex: InputIndex = 1;
+
+const defaultCurrency1 = "inr";
 let currency1: CurrencyCode =
-  (localStorage.getItem("currency1") as CurrencyCode) ?? "inr";
+  (localStorage.getItem(CURRENCY1) as CurrencyCode) ?? defaultCurrency1;
+
+const defaultCurrency2 = currency1 === "usd" ? "inr" : "usd";
 let currency2: CurrencyCode =
-  ((localStorage.getItem("currency2") as CurrencyCode) ?? currency1 === "usd")
-    ? "inr"
-    : "usd";
+  (localStorage.getItem(CURRENCY2) as CurrencyCode) ?? defaultCurrency2;
+
 let quantity1 = 0;
 let quantity2 = 0;
 let exchangeRates: USDExchangeRateResponse | null = null;
@@ -54,8 +62,9 @@ const currencyInput2 = new CurrencyInput();
   el.currency = i === 0 ? currency1 : currency2;
 });
 
-if (!localStorage.getItem("countryGuessed")) {
-  localStorage.setItem("countryGuessed", "1");
+// Predict currency based on timezone to country
+if (!localStorage.getItem(COUNTRY_GUESSED)) {
+  localStorage.setItem(COUNTRY_GUESSED, "1");
 
   // Predict a country based on the user's time zone
   const guessedCountry = getCountryForTimezone(
@@ -73,8 +82,8 @@ if (!localStorage.getItem("countryGuessed")) {
 }
 
 function storeCurrency() {
-  localStorage.setItem("currency1", currency1);
-  localStorage.setItem("currency2", currency2);
+  localStorage.setItem(CURRENCY1, currency1);
+  localStorage.setItem(CURRENCY2, currency2);
 }
 
 currencyContainer1?.appendChild(currencyInput1);
@@ -170,7 +179,7 @@ function handleInputChange(event: KeyboardEvent) {
         }
       }
 
-      wasZero = (input.value === 0);
+      wasZero = input.value === 0;
       break;
   }
 
@@ -224,8 +233,8 @@ export function updateHomeHeader() {
 export function reverseCurrencies() {
   // Flip values
   [currency1, currency2] = [currency2, currency1];
-  storeCurrency();
   [quantity1, quantity2] = [quantity2, quantity1];
+  storeCurrency();
 
   updateLabel(currencyLabel1, currency1);
   updateLabel(currencyLabel2, currency2);
