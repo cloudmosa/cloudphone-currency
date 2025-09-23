@@ -19,7 +19,9 @@ const asOfDate = _("as-of-date") as HTMLElement;
 function getCloudPhoneVersion() {
   try {
     if (navigator.userAgent.includes("Cloud Phone")) {
-      return parseFloat(navigator.userAgent.split("Cloud Phone ")[1].split(" ")[0])
+      return parseFloat(
+        navigator.userAgent.split("Cloud Phone ")[1].split(" ")[0],
+      );
     }
   } catch (e) {
     console.warn(e);
@@ -31,7 +33,7 @@ function getCloudPhoneVersion() {
 function getKaiOSVersion() {
   try {
     if (navigator.userAgent.includes("KAIOS")) {
-      return parseFloat(navigator.userAgent.split("KAIOS/")[1])
+      return parseFloat(navigator.userAgent.split("KAIOS/")[1]);
     }
   } catch (e) {
     console.warn(e);

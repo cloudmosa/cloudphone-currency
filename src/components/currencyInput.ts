@@ -307,8 +307,14 @@ export class CurrencyInput extends HTMLDivElement {
     let caretStart = this._input.selectionStart ?? 0;
 
     // Look one character back when deleting a decimal separator
-    const previousCharacter = currentFormatted.substring(caretStart - 1, caretStart);
-    if (previousCharacter === this._decimalSeparator || previousCharacter === DEFAULT_DECIMAL_SEPARATOR) {
+    const previousCharacter = currentFormatted.substring(
+      caretStart - 1,
+      caretStart,
+    );
+    if (
+      previousCharacter === this._decimalSeparator ||
+      previousCharacter === DEFAULT_DECIMAL_SEPARATOR
+    ) {
       caretStart = caretStart - 1;
     }
 

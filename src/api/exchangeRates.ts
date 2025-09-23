@@ -35,8 +35,8 @@ function fetchWithFallback(
   );
 
   // Cache busting parameters
-  JSDELIVR_URL.searchParams.set('z', Date.now().toString());
-  CLOUDFLARE_URL.searchParams.set('z', Date.now().toString());
+  JSDELIVR_URL.searchParams.set("z", Date.now().toString());
+  CLOUDFLARE_URL.searchParams.set("z", Date.now().toString());
 
   return fetch(JSDELIVR_URL, FETCH_REQUEST_INIT)
     .catch(() => fetch(CLOUDFLARE_URL, FETCH_REQUEST_INIT))
