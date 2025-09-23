@@ -339,6 +339,10 @@ export function focusHome() {
   showCenterButton();
 }
 
+function onFormSubmit(event: SubmitEvent) {
+  event.preventDefault();
+}
+
 export function setup(rates: USDExchangeRateResponse) {
   exchangeRates = rates;
   bindInputs();
@@ -347,8 +351,9 @@ export function setup(rates: USDExchangeRateResponse) {
   updateLabel(currencyLabel1, currency1);
   updateLabel(currencyLabel2, currency2);
   window.addEventListener(CURRENCY_SELECTED, onCurrencySelected);
-  window.addEventListener(BACK, onBack, true);
+  window.addEventListener(BACK, onBack);
   window.addEventListener(SEARCH, onSearch);
+  document.forms[0].addEventListener('submit', onFormSubmit);
 }
 
 updateHomeHeader();

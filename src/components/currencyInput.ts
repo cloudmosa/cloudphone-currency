@@ -395,7 +395,6 @@ export class CurrencyInput extends HTMLDivElement {
     if (this.value !== 0) {
       e.preventDefault();
       this._performBackspace();
-      this._dispatchEvent(BACK);
       return;
     }
   };
@@ -489,7 +488,6 @@ export class CurrencyInput extends HTMLDivElement {
       if (e.key === "Backspace") {
         e.preventDefault();
         this._performBackspace();
-        this._dispatchEvent(BACK);
       }
       return;
     }
