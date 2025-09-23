@@ -192,7 +192,7 @@ function handleInputChange(event: KeyboardEvent) {
   focusIndex = index;
 
   setCurrencyState(index, { quantity: input.value });
-  updateUI();
+  requestAnimationFrame(updateUI);
 }
 
 function onGlobalKeyDown(event: KeyboardEvent) {
@@ -226,7 +226,12 @@ function onBack(event: Event) {
     return;
   }
 
+  const index = input === currencyInput1 ? 1 : 2;
+  focusIndex = index;
+
+  setCurrencyState(index, { quantity: input.value });
   requestAnimationFrame(updateUI);
+  
   wasZero = isZero;
 }
 
