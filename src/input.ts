@@ -131,6 +131,7 @@ const setCurrencyState = (
 
 function updateUI() {
   if (!exchangeRates) return;
+
   const [sourceIdx, targetIdx] = [focusIndex, focusIndex === 1 ? 2 : 1];
   const source = stateMap[sourceIdx]();
   const target = stateMap[targetIdx as InputIndex]();

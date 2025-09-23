@@ -59,7 +59,7 @@ export function setupAboutContent(rateDate: ExchangeRateDate) {
   // Add details to UI
   const timeZone = new Intl.DateTimeFormat().resolvedOptions().timeZone;
   const paragraph = document.createElement("small");
-  paragraph.innerHTML = `v${version} (${process.env.BUILD_HASH})<br />${getPlatform()}<br />${timeZone}`;
+  paragraph.innerHTML = `v${version} (${process.env.BUILD_HASH?.substring(0, 8)})<br />${getPlatform()}<br />${timeZone}`;
   dialog.firstElementChild?.appendChild(paragraph);
 }
 
