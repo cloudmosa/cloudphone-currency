@@ -145,6 +145,7 @@ function handleInputChange(event: KeyboardEvent) {
         hideCenterButton();
         event.preventDefault();
       }
+      firstKeyEvent = false;
       return;
     case "ArrowUp":
       if (input === currencyInput2 && event.type === "keydown") {
@@ -152,12 +153,14 @@ function handleInputChange(event: KeyboardEvent) {
         hideCenterButton();
         event.preventDefault();
       }
+      firstKeyEvent = false;
       return;
     case "Enter":
       if (!firstKeyEvent && event.type === "keyup") {
         activeIndex = focusIndex;
         openCurrencyDialog();
       }
+      firstKeyEvent = false;
       return;
   }
 
