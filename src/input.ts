@@ -361,7 +361,6 @@ function onFormSubmit(event: SubmitEvent) {
 
 export function setup(rates: USDExchangeRateResponse) {
   exchangeRates = rates;
-  bindInputs();
   focusHome();
   setupAboutPage();
   updateLabel(currencyLabel1, currency1);
@@ -370,6 +369,7 @@ export function setup(rates: USDExchangeRateResponse) {
   window.addEventListener(BACK, onBack);
   window.addEventListener(SEARCH, onSearch);
   document.forms[0].addEventListener("submit", onFormSubmit);
+  requestAnimationFrame(bindInputs);
 }
 
 export function finishSetup() {
