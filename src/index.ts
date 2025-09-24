@@ -1,6 +1,6 @@
 import { populateList } from "./pages/currencyList";
 import { fetchUSDExchangeRates } from "./api/exchangeRates";
-import { setup } from "./input";
+import { finishSetup, setup } from "./input";
 import "./components/currencyInput";
 import "./index.css";
 import { _ } from "./helpers/utils";
@@ -18,8 +18,14 @@ fetchUSDExchangeRates()
     // Clear splash screen and update UI
     setup(rates);
     setupAboutContent(rates.date);
-    requestAnimationFrame(() => splash.remove());
+    requestAnimationFrame(() => {
+      splash.remove();
+
+      // Avoids pending Enter event
+      requestAnimationFrame(finishSetup);
+    });
   })
+  // TODO: error screen
   .catch((e) => console.warn(e));
 
 document.documentElement.classList.remove("no-js");

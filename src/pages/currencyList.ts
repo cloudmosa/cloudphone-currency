@@ -156,7 +156,7 @@ function handleKeyUp(ev: KeyboardEvent) {
   }
 }
 
-function handleFocus(ev: FocusEvent) {
+export function marqueeOnFocus(ev: FocusEvent) {
   const target = ev.target as HTMLLIElement;
 
   if (target.tagName !== "LI") return;
@@ -168,7 +168,7 @@ function handleFocus(ev: FocusEvent) {
   if (overflowing) target.classList.add("marquee");
 }
 
-function handleBlur(ev: FocusEvent) {
+export function removeMarqueeOnBlur(ev: FocusEvent) {
   const target = ev.target as HTMLLIElement;
 
   target.classList.remove("marquee");
@@ -182,8 +182,8 @@ export const showCurrencyList = () => {
   dialog.open = true;
   dialog.addEventListener("keydown", handleKeydown, true);
   dialog.addEventListener("keyup", handleKeyUp, true);
-  dialog.addEventListener("focus", handleFocus, true);
-  dialog.addEventListener("blur", handleBlur, true);
+  dialog.addEventListener("focus", marqueeOnFocus, true);
+  dialog.addEventListener("blur", removeMarqueeOnBlur, true);
   setHeaderText("Currency");
   showInfoButton();
   setInfoButtonState("list");
@@ -196,8 +196,8 @@ export const hideCurrencyList = () => {
   unselectCurrency();
   dialog.removeEventListener("keydown", handleKeydown, true);
   dialog.removeEventListener("keyup", handleKeyUp, true);
-  dialog.removeEventListener("focus", handleFocus, true);
-  dialog.removeEventListener("blur", handleBlur, true);
+  dialog.removeEventListener("focus", marqueeOnFocus, true);
+  dialog.removeEventListener("blur", removeMarqueeOnBlur, true);
   updateHomeHeader();
   showInfoButton();
   setInfoButtonState("");

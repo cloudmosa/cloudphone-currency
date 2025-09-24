@@ -4,8 +4,10 @@ import { Currency, CurrencyCode } from "../data/currency";
 import { _ } from "../helpers/utils";
 import {
   createListItem,
+  marqueeOnFocus,
   onCurrencyClick,
   queryCurrencyCode,
+  removeMarqueeOnBlur,
   scrollIntoViewIfNeeded,
   selectCurrency as setSelectedCurrency,
 } from "./currencyList";
@@ -155,6 +157,8 @@ export function showSearch() {
   list.addEventListener("keydown", handleListKeydown, true);
   list.addEventListener("keyup", handleListKeyUp, true);
 
+  dialog.addEventListener("focus", marqueeOnFocus, true);
+  dialog.addEventListener("blur", removeMarqueeOnBlur, true);
   dialog.open = true;
   setInfoButtonState("search");
   hideInfoButton();
@@ -166,6 +170,9 @@ export function showSearch() {
 
 export function hideSearch() {
   dialog.open = false;
+
+  dialog.removeEventListener("focus", marqueeOnFocus, true);
+  dialog.removeEventListener("blur", removeMarqueeOnBlur, true);
 
   input.removeEventListener("keydown", handleInputKeydown);
   input.removeEventListener("change", handleInputChange);

@@ -31,8 +31,33 @@ html {
   margin: 0;
 }
 
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("Roboto"),
+    url("https://fonts.bunny.net/roboto/files/roboto-latin-ext-400-normal.woff2")
+      format("woff2"),
+    url("https://fonts.bunny.net/roboto/files/roboto-latin-ext-400-normal.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  src:
+    local("Roboto"),
+    url("https://fonts.bunny.net/roboto/files/roboto-latin-ext-700-normal.woff2")
+      format("woff2"),
+    url("https://fonts.bunny.net/roboto/files/roboto-latin-ext-700-normal.woff")
+      format("woff");
+}
+
 * {
   font-family: Roboto, sans-serif;
+  font-display: swap;
 }
 
 #app,

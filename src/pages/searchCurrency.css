@@ -31,7 +31,7 @@ dialog#search:open {
   padding: 0;
   background-color: transparent;
   color: var(--text-primary);
-  font-weight: 900;
+  font-weight: bold;
 }
 
 #search-list-container {

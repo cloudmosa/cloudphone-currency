@@ -1,9 +1,4 @@
-import {
-  CURRENCIES,
-  findCurrency,
-  getCountryCode,
-  guessCurrency,
-} from "./data/currencies";
+import { findCurrency, getCountryCode } from "./data/currencies";
 import { exchange, USDExchangeRateResponse } from "./api/exchangeRates";
 import { CurrencyCode } from "./data/currency";
 import { _ } from "./helpers/utils";
@@ -29,7 +24,6 @@ import {
   setupAboutPage,
   showCenterButton,
 } from "./components/softkeys";
-import { getCountryForTimezone } from "./data/timezone";
 import {
   isSearchOpen,
   selectCurrencies as selectSearchCurrencies,
@@ -39,7 +33,6 @@ import { isAboutOpen } from "./pages/about";
 // localStorage keys
 const CURRENCY1 = "currency1";
 const CURRENCY2 = "currency2";
-const COUNTRY_GUESSED = "countryGuessed";
 
 type InputIndex = 1 | 2;
 
@@ -47,11 +40,11 @@ let focusIndex: InputIndex = 1;
 let activeIndex: InputIndex = 1;
 let setupFinished = false;
 
-const defaultCurrency1 = "inr";
+const defaultCurrency1: CurrencyCode = "inr";
+const defaultCurrency2: CurrencyCode = "usd";
+
 let currency1: CurrencyCode =
   (localStorage.getItem(CURRENCY1) as CurrencyCode) ?? defaultCurrency1;
-
-const defaultCurrency2 = currency1 === "usd" ? "inr" : "usd";
 let currency2: CurrencyCode =
   (localStorage.getItem(CURRENCY2) as CurrencyCode) ?? defaultCurrency2;
 
@@ -70,25 +63,6 @@ const currencyInput2 = new CurrencyInput();
   el.setAttribute("name", `currency${i + 1}`);
   el.currency = i === 0 ? currency1 : currency2;
 });
-
-// Predict currency based on timezone to country
-if (!localStorage.getItem(COUNTRY_GUESSED)) {
-  localStorage.setItem(COUNTRY_GUESSED, "1");
-
-  // Predict a country based on the user's time zone
-  const guessedCountry = getCountryForTimezone(
-    new Intl.DateTimeFormat().resolvedOptions().timeZone,
-  )?.id;
-
-  if (guessedCountry) {
-    const guessedCurrency = guessCurrency(guessedCountry);
-
-    if (guessedCurrency) {
-      currency1 = guessedCurrency.currencyCode;
-      storeCurrency();
-    }
-  }
-}
 
 function storeCurrency() {
   localStorage.setItem(CURRENCY1, currency1);
@@ -304,6 +278,7 @@ function reverseCurrencies() {
 
 function openCurrencyDialog() {
   if (!setupFinished) return;
+
   // Don't allow selection of already-selected currencies
   selectCurrency(activeIndex === 1 ? currency2 : currency1, false);
   selectCurrency(activeIndex === 1 ? currency1 : currency2, true);
@@ -395,10 +370,10 @@ export function setup(rates: USDExchangeRateResponse) {
   window.addEventListener(BACK, onBack);
   window.addEventListener(SEARCH, onSearch);
   document.forms[0].addEventListener("submit", onFormSubmit);
+}
 
-  queueMicrotask(() => {
-    setupFinished = true;
-  });
+export function finishSetup() {
+  setupFinished = true;
 }
 
 updateHomeHeader();
