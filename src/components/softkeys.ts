@@ -1,6 +1,6 @@
 import { showAbout } from "../pages/about";
 import "./softkeys.css";
-import { _ } from "../helpers/utils";
+import { _, isCloudPhone } from "../helpers/utils";
 import { showSearch } from "../pages/searchCurrency";
 import { ABOUT, BACK, SEARCH } from "../helpers/events";
 import { dispatchInputEvent } from "../input";
@@ -12,8 +12,10 @@ const centerButton = infoButton.nextElementSibling as HTMLDivElement;
 const ENTER_EVENT = { key: "Enter", code: "Enter", keyCode: 13, which: 13 };
 
 function attachSoftKeyClickEvents() {
-  infoButton.addEventListener("click", onSoftLeftClick);
-  centerButton.addEventListener("click", onCenterClick);
+  if (!isCloudPhone()) {
+    infoButton.addEventListener("click", onSoftLeftClick);
+    centerButton.addEventListener("click", onCenterClick);
+  }
 
   // Replicate the Back functionality with a click (this breaks focus)
   const backButton = footer.lastElementChild as HTMLDivElement;

@@ -1,7 +1,7 @@
 import { findCurrency, getCountryCode } from "./data/currencies";
 import { exchange, USDExchangeRateResponse } from "./api/exchangeRates";
 import { CurrencyCode } from "./data/currency";
-import { _ } from "./helpers/utils";
+import { _, isCloudPhone } from "./helpers/utils";
 import {
   BACK,
   CURRENCIES_REVERSED,
@@ -38,7 +38,6 @@ type InputIndex = 1 | 2;
 
 let focusIndex: InputIndex = 1;
 let activeIndex: InputIndex = 1;
-let setupFinished = false;
 
 const defaultCurrency1: CurrencyCode = "inr";
 const defaultCurrency2: CurrencyCode = "usd";
@@ -277,8 +276,6 @@ function reverseCurrencies() {
 }
 
 function openCurrencyDialog() {
-  if (!setupFinished) return;
-
   // Don't allow selection of already-selected currencies
   selectCurrency(activeIndex === 1 ? currency2 : currency1, false);
   selectCurrency(activeIndex === 1 ? currency1 : currency2, true);
@@ -322,9 +319,11 @@ function bindInputs() {
     input.addEventListener("blur", handleBlur);
   });
 
-  [currencyLabel1, currencyLabel2].forEach((label) =>
-    label.addEventListener("click", onCurrencyLabelClick),
-  );
+  if (!isCloudPhone()) {
+    [currencyLabel1, currencyLabel2].forEach((label) =>
+      label.addEventListener("click", onCurrencyLabelClick),
+    );
+  }
 }
 
 function onCurrencySelected(event: Event) {
@@ -369,11 +368,10 @@ export function setup(rates: USDExchangeRateResponse) {
   window.addEventListener(BACK, onBack);
   window.addEventListener(SEARCH, onSearch);
   document.forms[0].addEventListener("submit", onFormSubmit);
-  requestAnimationFrame(bindInputs);
 }
 
 export function finishSetup() {
-  setupFinished = true;
+  bindInputs();
 }
 
 updateHomeHeader();
