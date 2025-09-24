@@ -132,6 +132,7 @@ function updateUI() {
   setCurrencyState(targetIdx as InputIndex, { quantity: result });
 }
 
+let firstKeyEvent = true;
 let wasZero = false;
 
 function handleInputChange(event: KeyboardEvent) {
@@ -153,7 +154,7 @@ function handleInputChange(event: KeyboardEvent) {
       }
       return;
     case "Enter":
-      if (event.type === "keyup") {
+      if (!firstKeyEvent && event.type === "keyup") {
         activeIndex = focusIndex;
         openCurrencyDialog();
       }
@@ -166,6 +167,7 @@ function handleInputChange(event: KeyboardEvent) {
 
   setCurrencyState(index, { quantity: input.value });
   requestAnimationFrame(updateUI);
+  firstKeyEvent = false;
 }
 
 function onGlobalKeyDown(event: KeyboardEvent) {
