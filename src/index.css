@@ -21,6 +21,7 @@
 
   --text-primary: var(--white);
   --text-secondary: var(--white-50);
+  --label-height: 2em;
 }
 
 body,
@@ -69,6 +70,22 @@ section {
 .currency-selection {
   background-color: var(--bg-muted);
   box-sizing: border-box;
+}
+
+#currency-container1,
+#currency-container2 {
+  height: 100%;
+  height: calc(100% - var(--label-height));
+  font-weight: bold;
+}
+
+.currency-selection label {
+  height: var(--label-height);
+  line-height: var(--label-height);
+}
+
+.currency-selection label > div {
+  margin-inline-start: 0.25em;
 }
 
 #app {
@@ -148,6 +165,10 @@ div[currency] {
 
 /* QVGA (or bigger) */
 @media only screen and (min-width: 129px) {
+  :root {
+    --label-height: 2em;
+  }
+
   #reverse {
     height: 2.518rem;
     width: 2.518rem;
@@ -174,9 +195,13 @@ div[currency] {
   }
 
   .currency-selection label {
-    height: 2rem;
-    line-height: 2rem;
     font-size: 15pt;
+  }
+
+  #currency-container1,
+  #currency-container2 {
+    font-size: 1.2em;
+    margin-block-start: 0.25em;
   }
 
   .currency-selection label > div {
@@ -228,6 +253,10 @@ div[currency] {
 
 /* QQVGA */
 @media only screen and (max-width: 128px) {
+  :root {
+    --label-height: 1em;
+  }
+
   #reverse {
     width: 1.5rem;
     height: 1.5rem;
@@ -249,9 +278,13 @@ div[currency] {
   }
 
   .currency-selection label {
-    height: 1rem;
-    line-height: 1rem;
     font-size: 7.5pt;
+  }
+
+  #currency-container1,
+  #currency-container2 {
+    font-size: 0.8em;
+    margin-block-start: 1em;
   }
 
   .currency-selection label i {

@@ -105,7 +105,7 @@ function numericPositionsInFormatted(
   return positions;
 }
 
-export class CurrencyInput extends HTMLDivElement {
+export class CurrencyInput extends HTMLElement {
   // Allows input participate in form submission, validation,
   // and to be associated with <label> elements
   static formAssociated = true;
@@ -136,7 +136,7 @@ export class CurrencyInput extends HTMLDivElement {
     const styles = new CSSStyleSheet();
 
     styles.replaceSync(
-      `:host{width:100%;height:100%;}input{all:unset;height:inherit;width:inherit;}input:focus{outline:none;}`,
+      `:host{width:100%;display:block;}input{all:unset;height:inherit;width:inherit;}input:focus{outline:none;}`,
     );
 
     this._shadow.adoptedStyleSheets = [styles];
@@ -389,7 +389,6 @@ export class CurrencyInput extends HTMLDivElement {
   private _onBack = (e: Event) => {
     // Ignore when not in focus
     const focused = this.isFocused();
-    console.log("onBack", e, focused);
     if (!focused) return;
 
     // Prevent closing app when value isn't zero
@@ -453,8 +452,14 @@ export class CurrencyInput extends HTMLDivElement {
     // Handle arrow navigation across only numeric/decimal characters
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       e.preventDefault(); // prevent browser default move
+
+      // Find the displayed currency symbol from Intl.NumberFormat
+      const displaySymbol =
+        this._fmt.formatToParts(0).find((part) => part.type === "currency")
+          ?.value || this._currencySymbol;
+
       const value = this._input.value;
-      const start = this._currencySymbol.length;
+      const start = displaySymbol.length;
       let pos = this._input.selectionStart ?? start;
 
       // Reversed for RTL
@@ -515,4 +520,4 @@ export class CurrencyInput extends HTMLDivElement {
 
 // Register custom element
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/customElements
-customElements.define("currency-input", CurrencyInput, { extends: "div" });
+customElements.define("currency-input", CurrencyInput);

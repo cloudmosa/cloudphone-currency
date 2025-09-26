@@ -54,8 +54,11 @@ let exchangeRates: USDExchangeRateResponse | null = null;
 // Create and append custom elements (after registration)
 const currencyContainer1 = _("currency-container1");
 const currencyContainer2 = _("currency-container2");
-const currencyInput1 = new CurrencyInput();
-const currencyInput2 = new CurrencyInput();
+
+// Note: use createElement instead of new CurrencyInput()
+// Safari does not support construction using the new keyword
+const currencyInput1 = document.createElement("currency-input");
+const currencyInput2 = document.createElement("currency-input");
 
 [currencyInput1, currencyInput2].forEach((el, i) => {
   el.setAttribute("id", `currency${i + 1}`);
@@ -189,7 +192,6 @@ function onHomePage() {
 }
 
 function onBack(event: Event) {
-  console.log("onBack", event, onHomePage());
   event.preventDefault();
 
   // Don't handle when we're not on the home page
