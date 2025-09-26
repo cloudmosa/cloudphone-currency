@@ -57,8 +57,8 @@ const currencyContainer2 = _("currency-container2");
 
 // Note: use createElement instead of new CurrencyInput()
 // Safari does not support construction using the new keyword
-const currencyInput1 = document.createElement("currency-input");
-const currencyInput2 = document.createElement("currency-input");
+const currencyInput1 = document.createElement("currency-input") as CurrencyInput;
+const currencyInput2 = document.createElement("currency-input") as CurrencyInput;
 
 [currencyInput1, currencyInput2].forEach((el, i) => {
   el.setAttribute("id", `currency${i + 1}`);
